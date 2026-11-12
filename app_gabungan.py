@@ -41,45 +41,57 @@ def preprocess_text(text):
 def extract_automatic_scores(text):
     text_lower = text.lower()
     
-    # --- 1. SKOR DAMPAK (Skala 0 - 10, Beragam & Kumulatif) ---
-    dampak_score = 2.0  # Baseline awal (sangat ringan)
+    # --- 1. SKOR DAMPAK (Skala 0 - 10, Diperkaya) ---
+    dampak_score = 2.0  # Baseline awal
     
-    # Kata kunci tingkat keparahan tinggi / ekstrem
-    extreme_impact_keywords = ['korban jiwa', 'meninggal', 'mati', 'hancur total', 'amblas parah', 'lumpuh total']
-    high_impact_keywords = ['kebakaran', 'korban', 'darurat', 'terluka', 'hanyut', 'ledakan', 'roboh']
-    med_impact_keywords = ['rusak', 'bocor', 'macet', 'patah', 'padam', 'genangan']
+    extreme_impact_keywords = [
+        'korban jiwa', 'meninggal', 'mati', 'hancur total', 'amblas parah', 
+        'lumpuh total', 'meledak', 'hanyut terbawa arus', 'kritis'
+    ]
+    high_impact_keywords = [
+        'kebakaran', 'korban', 'darurat', 'terluka', 'hanyut', 'ledakan', 
+        'roboh', 'pingsan', 'keracunan', 'ambruk', 'lumpuh'
+    ]
+    med_impact_keywords = [
+        'rusak', 'bocor', 'macet', 'patah', 'padam', 'genangan', 
+        'retak', 'tersumbat', 'bau', 'gelap'
+    ]
     
-    # Akumulasi bobot dampak
     if any(kw in text_lower for kw in extreme_impact_keywords):
-        dampak_score += 7.5  # Penambahan besar jika ada unsur korban jiwa/ekstrem
-    
+        dampak_score += 7.5
+        
     for kw in high_impact_keywords:
         if kw in text_lower:
-            dampak_score += 3.0  # Menambah bobot per kata kunci bahaya yang ditemukan
+            dampak_score += 3.0
             
     for kw in med_impact_keywords:
         if kw in text_lower:
-            dampak_score += 1.5  # Menambah bobot untuk kerusakan sedang
+            dampak_score += 1.5
             
-    # Batasi maksimal 10.0 dan minimal 1.0
     dampak_score = min(max(dampak_score, 1.0), 10.0)
 
 
-    # --- 2. SKOR CAKUPAN (Skala 0 - 10, Beragam & Kumulatif) ---
-    cakupan_score = 2.0  # Baseline awal (skala lokal/kecil)
+    # --- 2. SKOR CAKUPAN (Skala 0 - 10, Diperkaya termasuk "Meluas") ---
+    cakupan_score = 2.0  # Baseline awal
     
-    wide_coverage_keywords = ['seluruh', 'semua', 'masal','meluas', 'nasional', 'sekecamatan', 'sekelurahan', 'kota', 'besar']
-    duration_keywords = ['berjam-jam', 'hari', 'minggu', 'seharian', 'terus menerus', 'berhari-hari']
+    wide_coverage_keywords = [
+        'meluas', 'seluruh', 'semua', 'masal', 'nasional', 'sekecamatan', 
+        'sekelurahan', 'kota', 'besar', 'merata', 'seantero', 'menyeluruh',
+        'beruntun', 'banyak titik'
+    ]
+    duration_keywords = [
+        'berjam-jam', 'hari', 'minggu', 'seharian', 'terus menerus', 
+        'berhari-hari', 'lama', 'tiga hari'
+    ]
     
-    # Cek kombinasi durasi waktu lama (misal: "sudah 3 hari" atau "berjam-jam")
-    if any(kw in text_lower for kw in duration_keywords) or 'hari' in text_lower or 'jam' in text_lower:
-        cakupan_score += 3.5
-        
+    # Jika ada kata penanda cakupan luas seperti "meluas"
     for kw in wide_coverage_keywords:
         if kw in text_lower:
-            cakupan_score += 4.0  # Menambah bobot jika cakupannya luas/masif
+            cakupan_score += 4.5  # Bobot besar untuk kata seperti "meluas"
             
-    # Batasi maksimal 10.0 dan minimal 1.0
+    if any(kw in text_lower for kw in duration_keywords) or 'hari' in text_lower or 'jam' in text_lower:
+        cakupan_score += 3.5
+            
     cakupan_score = min(max(cakupan_score, 1.0), 10.0)
 
     return round(dampak_score, 2), round(cakupan_score, 2)
