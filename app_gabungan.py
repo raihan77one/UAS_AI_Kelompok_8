@@ -68,7 +68,7 @@ def extract_automatic_scores(text):
     # --- 2. SKOR CAKUPAN (Skala 0 - 10, Beragam & Kumulatif) ---
     cakupan_score = 2.0  # Baseline awal (skala lokal/kecil)
     
-    wide_coverage_keywords = ['seluruh', 'semua', 'masal', 'nasional', 'sekecamatan', 'sekelurahan', 'kota', 'besar']
+    wide_coverage_keywords = ['seluruh', 'semua', 'masal','meluas', 'nasional', 'sekecamatan', 'sekelurahan', 'kota', 'besar']
     duration_keywords = ['berjam-jam', 'hari', 'minggu', 'seharian', 'terus menerus', 'berhari-hari']
     
     # Cek kombinasi durasi waktu lama (misal: "sudah 3 hari" atau "berjam-jam")
